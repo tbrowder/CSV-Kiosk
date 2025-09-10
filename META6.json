@@ -1,25 +1,34 @@
 {
   "auth": "zef:tbrowder",
   "authors": [
-    "Tom Browder"
+    "Tom Browder",
+    "ChatGPT Assistant"
   ],
   "build-depends": [
   ],
   "depends": [
+    "Text::CSV",
+    "JSON::Fast",
+    "PDF::Lite"
   ],
-  "description": "Provides a simple CSV file data entry system\n",
+  "description": "Simple kiosk-style CSV entry + reporting (sort, duplicate detection, PDF list).",
   "license": "Artistic-2.0",
   "name": "CSV::Kiosk",
-  "perl": "6.d",
   "provides": {
-    "CSV::Kiosk": "lib/CSV/Kiosk.rakumod"
+    "CSV::Kiosk": "lib/CSV/Kiosk.rakumod",
+    "CSV::Kiosk::Report": "lib/CSV/Kiosk/Report.rakumod"
   },
   "resources": [
   ],
+  "scripts": {
+    "csv-kiosk": "bin/csv-kiosk.raku",
+    "csv-report": "bin/csv-report.raku"
+  },
   "source-url": "https://github.com/tbrowder/CSV-Kiosk.git",
   "tags": [
+    "csv kiosk pdf cli"
   ],
   "test-depends": [
   ],
-  "version": "0.0.1"
+  "version": "0.1.0"
 }

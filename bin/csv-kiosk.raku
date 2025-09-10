@@ -1,4 +1,3 @@
-
 #!/usr/bin/env raku
 use CSV::Kiosk :ALL;
 
