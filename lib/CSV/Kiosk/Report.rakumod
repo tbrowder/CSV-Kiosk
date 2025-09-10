@@ -18,8 +18,11 @@ sub read-csv(Str:D $csv-file, :$sep = ',') returns Hash is export {
 sub sort-csv(Str:D $csv-file, Str :$by?, :$sep = ',') is export {
     my $data = read-csv($csv-file, :$sep);
     my @h = $data<header>;
+
     my %idx = @h.kv.invert; # field -> index
-    my $i = $by.defined && %idx{$by}:exists ?? %idx{$by} !! 0;
+    # Parenthesize to avoid parsing :exists as an adverb on the infix op; use `and` per style.
+    my $i = ($by.defined and %idx{$by}:exists) ?? %idx{$by} !! 0;
+
     my @sorted = $data<rows>.sort( -> $a, $b { $a[$i] leg $b[$i] });
     # Write back
     my $csv = Text::CSV.new(:separator($sep));
