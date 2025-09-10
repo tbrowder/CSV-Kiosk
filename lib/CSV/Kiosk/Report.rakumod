@@ -1,4 +1,3 @@
-
 unit module CSV::Kiosk::Report;
 use Text::CSV;
 use PDF::Lite;
@@ -18,13 +17,9 @@ sub read-csv(Str:D $csv-file, :$sep = ',') returns Hash is export {
 sub sort-csv(Str:D $csv-file, Str :$by?, :$sep = ',') is export {
     my $data = read-csv($csv-file, :$sep);
     my @h = $data<header>;
-
-    my %idx = @h.kv.invert; # field -> index
-    # Parenthesize to avoid parsing :exists as an adverb on the infix op; use `and` per style.
+    my %idx = @h.kv.invert;
     my $i = ($by.defined and %idx{$by}:exists) ?? %idx{$by} !! 0;
-
     my @sorted = $data<rows>.sort( -> $a, $b { $a[$i] leg $b[$i] });
-    # Write back
     my $csv = Text::CSV.new(:separator($sep));
     my $tmp = "{$csv-file}.sorted.tmp";
     my $fh  = open $tmp, :w;
@@ -41,7 +36,7 @@ sub generate-pdf(Str:D $csv-file, Str:D $pdf-file, Str :$title = 'CSV List', :$s
 
     my $doc = PDF::Lite.new;
     my $page = $doc.page: :size<Letter>, :orientation<portrait>;
-    my $m = 36; # 0.5 inch margins
+    my $m = 36;
     my $x = $m;
     my $y = $page.height - $m;
 
@@ -50,12 +45,10 @@ sub generate-pdf(Str:D $csv-file, Str:D $pdf-file, Str :$title = 'CSV List', :$s
     $page.text: :at($x, $y), :font-size(10), :text("Fields: " ~ @header.join(', '));
     $y -= 16;
 
-    # two-column list of a single display field (first column by default)
     my $col-gap = 24;
     my $col-w   = ($page.width - 2*$m - $col-gap) div 2;
     my $left-x  = $x;
     my $right-x = $x + $col-w + $col-gap;
-
     my $line-h = 12;
     my $i = 0;
     for @rows».Array -> @r {
@@ -66,11 +59,9 @@ sub generate-pdf(Str:D $csv-file, Str:D $pdf-file, Str :$title = 'CSV List', :$s
         }
         my $cx = $i %% 2 ?? $left-x !! $right-x;
         $page.text: :at($cx, $y), :font-size(11), :text($text);
-        $y -= $i %% 2 ?? 0 !! $line-h; # move down after completing a row pair
+        $y -= $i %% 2 ?? 0 !! $line-h;
         $i++;
     }
-
-    # footer with count
     my $count = @rows.elems;
     $page.text: :at($page.width - $m - 100, $m/2), :font-size(10), :text("Total: {$count}");
     $doc.save-as($pdf-file);

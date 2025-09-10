@@ -1,17 +1,12 @@
-
 unit module CSV::Kiosk;
 use Text::CSV;
-use JSON::Fast;
 
 sub sanitize(Str $s is copy --> Str) is export {
-    # Remove surrounding quotes/spaces; normalize internal whitespace.
     $s ~~ s/^ \s* <['"]>? (.*?) <['"]>? \s* $/$0/;
     $s ~~ s:g/\s+/ /;
-    # Replace commas to avoid forced CSV quoting; strip remaining quotes
-    $s ~~ s:g/\,/ /;
     $s ~~ s:g/\,/ \/ /;
-    $s ~~ s:g/<["']>/ /;
-    $s.trim;
+    $s ~~ s:g/<['"]>/ /;
+    $s.trim
 }
 
 sub read-header(Str:D $csv-file, :$sep = ',') returns List is export {
@@ -19,7 +14,7 @@ sub read-header(Str:D $csv-file, :$sep = ',') returns List is export {
     my $fh  = open $csv-file, :r or die "Cannot open $csv-file for reading";
     my $hdr = $csv.getline($fh) or die "CSV file has no header!";
     $fh.close;
-    return $hdr;
+    $hdr;
 }
 
 sub load-rows(Str:D $csv-file, :$sep = ',') returns Array is export {
@@ -42,7 +37,6 @@ sub backup(Str:D $csv-file --> Str) is export {
 }
 
 sub is-duplicate(@header, @existing, @new-row) returns Bool is export {
-    # Simple duplicate: entire row matches existing row after sanitize
     my @clean-new = @new-row.map({ sanitize(.Str) });
     for @existing -> @row {
         my @clean = @row.map({ sanitize(.Str) });
