@@ -1,0 +1,31 @@
+{
+  "name": "CSV::Kiosk",
+  "auth": "zef:chatgpt",
+  "version": "0.1.0",
+  "description": "Simple kiosk-style CSV entry + reporting (sort, duplicate detection, PDF list).",
+  "authors": [
+    "ChatGPT Assistant"
+  ],
+  "depends": [
+    "Text::CSV",
+    "JSON::Fast",
+    "PDF::Lite"
+  ],
+  "provides": {
+    "CSV::Kiosk": "lib/CSV/Kiosk.rakumod",
+    "CSV::Kiosk::Report": "lib/CSV/Kiosk/Report.rakumod"
+  },
+  "license": "Artistic-2.0",
+  "source-url": "https://example.com/CSV-Kiosk",
+  "resources": [],
+  "tags": [
+    "csv",
+    "kiosk",
+    "pdf",
+    "cli"
+  ],
+  "scripts": {
+    "csv-kiosk": "bin/csv-kiosk.raku",
+    "csv-report": "bin/csv-report.raku"
+  }
+}

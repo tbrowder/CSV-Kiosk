@@ -1,0 +1,31 @@
+
+#!/usr/bin/env raku
+use CSV::Kiosk::Report :ALL;
+
+multi sub MAIN('sort',
+    Str :$csv! where *.IO.f,
+    Str :$by,
+    Str :$sep = ',',
+) {
+    sort-csv($csv, :$by, :$sep);
+    say "Sorted {$csv} by '{$by // 'first field'}'.";
+}
+
+multi sub MAIN('pdf',
+    Str :$csv! where *.IO.f,
+    Str :$out! where *.IO.dirname.IO.d,
+    Str :$title = 'CSV List',
+    Str :$sep = ',',
+) {
+    generate-pdf($csv, $out, :$title, :$sep);
+    say "PDF written to {$out}.";
+}
+
+multi sub MAIN('dump',
+    Str :$csv! where *.IO.f,
+    Str :$sep = ',',
+) {
+    my $data = read-csv($csv, :$sep);
+    say $data<header>.join(',');
+    for $data<rows> -> $r { say $r.join(',') }
+}

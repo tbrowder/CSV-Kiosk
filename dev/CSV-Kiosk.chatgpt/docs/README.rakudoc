@@ -1,0 +1,43 @@
+
+=begin pod
+=TITLE CSV::Kiosk (ChatGPT edition)
+
+=head1 Overview
+A simple kiosk-style CSV entry tool with reporting utilities.
+
+=head1 Features
+* Interactive loop: keep the program open while people enter data sequentially.
+* Backup: timestamped CSV backup on each session start.
+* Input hygiene: trims whitespace; strips quotes; replaces commas with " / " to avoid quoted CSV fields.
+* Duplicate detection: warns and skips exact duplicate rows.
+* Reports:
+  * Sort in-place by a named field (default first field).
+  * Generate a simple two-column PDF list (first column as display).
+
+=head1 Install
+```
+zef install .
+```
+
+=head1 Usage
+
+=head2 Interactive entry
+```
+csv-kiosk --csv attendees.csv
+```
+
+=head2 Sort by a field
+```
+csv-report sort --csv attendees.csv --by name
+```
+
+=head2 PDF list
+```
+csv-report pdf --csv attendees.csv --out attendees.pdf --title "Attendees"
+```
+
+=head1 Notes
+* CSV must have a header row.
+* PDF list uses the first field of each row as its display text.
+* This distro prefers unquoted fields by sanitizing commas/quotes from input.
+=end pod
