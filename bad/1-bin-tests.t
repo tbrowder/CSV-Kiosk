@@ -7,7 +7,8 @@ my $prog1 = "csvk-kiosk";
 my $prog2 = "csvk-report";
 
 lives-ok {
-    run "raku", "-I.", "bin/$prog1";
+    #run "raku", "-I.", "bin/$prog1";
+    run "bin/$prog1";
 }, "bin 1: $prog1";
 
 lives-ok {
