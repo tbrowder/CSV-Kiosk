@@ -1,3 +1,5 @@
+[![Actions Status](https://github.com/tbrowder/CSV-Kiosk/actions/workflows/linux.yml/badge.svg)](https://github.com/tbrowder/CSV-Kiosk/actions) [![Actions Status](https://github.com/tbrowder/CSV-Kiosk/actions/workflows/macos.yml/badge.svg)](https://github.com/tbrowder/CSV-Kiosk/actions) [![Actions Status](https://github.com/tbrowder/CSV-Kiosk/actions/workflows/windows.yml/badge.svg)](https://github.com/tbrowder/CSV-Kiosk/actions)
+
 NAME
 ====
 
@@ -13,7 +15,11 @@ use CSV::Kiosk;
 DESCRIPTION
 ===========
 
-**CSV::Kiosk** is ...
+**CSV::Kiosk** is designed to aid in entering attendee data into a simple CSV file with the entry monitored and aided by one person. The example use case is for a upcoming reunion for the US Air Force Academy of 1965.
+
+The CSV header line:
+
+    last, first, middle, suffix, CS, email, phone, address1, address2, city, state, zip-code, guest, guest-relationship, other-information
 
 AUTHOR
 ======

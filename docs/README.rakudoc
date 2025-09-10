@@ -8,14 +8,21 @@ B<CSV::Kiosk> - Provides a simple CSV file data entry system
 =head1 SYNOPSIS
 
 =begin code :lang<raku>
-
 use CSV::Kiosk;
-
 =end code
 
 =head1 DESCRIPTION
 
-B<CSV::Kiosk> is ...
+B<CSV::Kiosk> is designed to aid in entering attendee data into
+a simple CSV file with the entry monitored and aided by one
+person. The example use case is for a upcoming reunion for 
+the US Air Force Academy of 1965.
+
+The CSV header line:
+
+=begin code
+last, first, middle, suffix, CS, email, phone, address1, address2, city, state, zip-code, guest, guest-relationship, other-information
+=end code
 
 =head1 AUTHOR
 
