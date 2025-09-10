@@ -21,8 +21,8 @@
   "resources": [
   ],
   "scripts": {
-    "csv-kiosk": "bin/csv-kiosk.raku",
-    "csv-report": "bin/csv-report.raku"
+    "csvk-kiosk": "bin/csvk-kiosk.raku",
+    "csvk-report": "bin/csvk-report.raku"
   },
   "source-url": "https://github.com/tbrowder/CSV-Kiosk.git",
   "tags": [
