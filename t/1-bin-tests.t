@@ -14,7 +14,4 @@ lives-ok {
     run "raku", "-I.", "bin/$prog2";
 }, "bin 1: $prog2";
 
-
-
-
 done-testing;
