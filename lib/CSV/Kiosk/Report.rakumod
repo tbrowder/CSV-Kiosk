@@ -9,7 +9,6 @@ sub txt($page, $x, $y, $s) {
         $page.text($x, $y, $s);
         $ok = True;
     }
-    CATCH { default { } }
     unless $ok {
         try {
             $page.text($s, :at[$x, $y]);
@@ -40,7 +39,15 @@ sub sort-csv(Str:D $csv-file, Str :$by = '', Str :$sep = ',') is export {
     my $data   = read-csv($csv-file, :$sep);
     my @header = $data<header>;
     my %idx    = @header.kv.map({ .value => .key }).Hash;
-    my $i      = $by.chars && %idx{$by}:exists ?? %idx{$by} !! 0;
+
+my $i;
+if $by.chars and %idx{$by}:exists {
+    $i = %idx{$by};
+}
+else {
+    $i = 0;
+}
+
     my @rows   = $data<rows>.sort( -> @a, @b { @a[$i] leg @b[$i] } );
     spurt $csv-file, @header.join($sep) ~ "\n" ~ @rows.map(*.join($sep)).join("\n") ~ "\n";
     True
@@ -63,24 +70,21 @@ sub generate-pdf(Str:D $csv-file, Str:D $pdf-file, Str :$title = 'CSV List', Str
 
     # Title
     try { $page.set-font('Helvetica-Bold', 18) }
-    CATCH { }
     txt($page, $x, $y, $title);
     $y -= 2*$lh;
 
     # Header
     try { $page.set-font('Helvetica', 10) }
-    CATCH { }
     txt($page, $x, $y, "Fields: " ~ @header.join(', '));
     $y -= 1.5*$lh;
 
     # Rows
     try { $page.set-font('Helvetica', 11) }
-    CATCH { }
     for @rows -> @r {
         if $y < $m + $lh {
             $page = $doc.page: :size<Letter>, :orientation<portrait>;
             $y = $page.height - $m;
-            try { $page.set-font('Helvetica', 11) } CATCH { }
+            try { $page.set-font('Helvetica', 11) }; #CATCH { }
         }
         my $line = @r.join('  |  ');
         txt($page, $x, $y, $line);
