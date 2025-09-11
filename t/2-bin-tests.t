@@ -3,7 +3,7 @@ use v6;
 use Test;
 use Text::CSV;
 
-plan *;  # flexible
+plan *;  # flexible test count; we'll end with done-testing
 
 # -------- helpers --------
 sub find-exe-matching(*@needles --> IO::Path) {
@@ -40,28 +40,27 @@ sub pdf-lite-available() {
     $ok
 }
 
-# Try a sequence of argv variants until one returns exit 0.
-sub run-one(@argv --> List) {
-    my $p = run |@argv, :in, :out, :err;
-    return ($p.exitcode // -1, $p.out.slurp-rest, $p.err.slurp-rest);
+# Read --help text and return combined out+err
+sub help-text(IO::Path $exe --> Str) {
+    my $p = run $exe.Str, "--help", :out, :err;
+    return $p.out.slurp-rest ~ $p.err.slurp-rest;
 }
 
-sub try-argv(@variants, Str :$stdin = "") {
-    for @variants -> @argv {
-        my ($ec, $out, $err) = run-one(@argv);
-        if $stdin.chars {
-            # If the proc wants input, re-run with input
-            my $p = run |@argv, :in, :out, :err;
-            $p.in.print($stdin);
-            $p.in.close;
-            $out = $p.out.slurp-rest;
-            $err = $p.err.slurp-rest;
-            $ec  = $p.exitcode // -1;
-        }
-        return (True, @argv, $out, $err) if $ec == 0;
-        diag "Variant failed (exit {$ec}): {@argv.join(' ')}\nstderr:\n$err\nstdout:\n$out";
-    }
-    return (False, [], "", "");
+sub csv-flag-for(Str $help --> Str) {
+    return '--csv'   if $help.contains('--csv');
+    return '--file'  if $help.contains('--file');
+    return '--input' if $help.contains('--input');
+    ''
+}
+
+# Run a candidate argv; feed stdin if provided
+sub run-cmd(@argv, Str :$stdin = "") {
+    my $p = run |@argv, :in, :out, :err;
+    if $stdin.chars { $p.in.print($stdin) andthen $p.in.close }
+    my $out = $p.out.slurp-rest;
+    my $err = $p.err.slurp-rest;
+    my $ec  = $p.exitcode // -1;
+    return $ec, $out, $err;
 }
 
 # -------- locate bins --------
@@ -82,53 +81,44 @@ my $csv = $tmpdir.add("attendees.csv").Str;
 spurt $csv, "name,email\nAlice,alice\@example.com\nBob,bob\@example.com\n";
 ok $csv.IO.e, "seed CSV created at $csv";
 
-# -------- run kiosk (try both --csv and positional) --------
+# -------- kiosk run --------
 my $stdin = "Charlie\ncharlie\@example.com\nq\n";
-my @kiosk-variants = (
-    [$kiosk.Str, "--csv", $csv],
-    [$kiosk.Str, $csv],
-);
-my ($ok1, @argv1, $kout, $kerr) = try-argv(@kiosk-variants, :$stdin);
-ok $ok1, "kiosk run completed OK" or diag "All kiosk variants failed";
+my $khelp = help-text($kiosk);
+my $kflag = csv-flag-for($khelp);
+my @kargs = $kflag.chars ?? [$kiosk.Str, $kflag, $csv] !! [$kiosk.Str, $csv];
+my ($kec,$kout,$kerr) = run-cmd(@kargs,:$stdin);
+is $kec,0,"kiosk run exitcode ok";
+diag "kiosk stderr:\n$kerr" if $kerr.chars;
+diag "kiosk stdout:\n$kout" if $kout.chars;
 
-# verify appended row
 my $parsed = read-csv-safe($csv);
 ok $parsed.defined, 'CSV parsed after kiosk run';
 if $parsed.defined {
-    my ($hdr, @rows) = $parsed;
-    my $added = @rows.grep({ .[0] eq 'Charlie' and .[1] eq 'charlie@example.com' }).elems;
-    ok $added == 1, 'kiosk appended expected row' or diag "Rows now: " ~ @rows.map(*.join(',')).join(' | ');
+    my ($hdr,@rows) = $parsed;
+    ok @rows.grep({ .[0] eq 'Charlie' and .[1] eq 'charlie@example.com' }).elems==1,
+       "kiosk appended expected row";
 }
 
-# -------- sort (try a few CLI layouts) --------
-my @sort-variants = (
-    [$report.Str, "sort", "--csv", $csv, "--by", "name"],
-    [$report.Str, "--csv", $csv, "sort", "--by", "name"],
-    [$report.Str, "sort", $csv, "--by", "name"],
-    [$report.Str, "sort", "--by", "name", $csv],
-);
-my ($ok2, @argv2, $sout, $serr) = try-argv(@sort-variants);
-ok $ok2, "report sort completed OK" or diag "All sort variants failed";
+# -------- sort --------
+my $rhelp = help-text($report);
+my $rflag = csv-flag-for($rhelp);
+my @sargs = $rflag.chars ?? [$report.Str,"sort",$rflag,$csv,"--by","name"]
+                        !! [$report.Str,"sort",$csv,"--by","name"];
+my ($sec,$sout,$serr)=run-cmd(@sargs);
+is $sec,0,"report sort exitcode ok";
+diag "report stderr:\n$serr" if $serr.chars;
 
-# -------- pdf (similar flexibility) --------
+# -------- pdf --------
 my $out = $tmpdir.add("attendees.pdf").Str;
 if pdf-lite-available() {
-    my @pdf-variants = (
-        [$report.Str, "pdf", "--csv", $csv, "--out", $out, "--title", "Attendees"],
-        [$report.Str, "--csv", $csv, "pdf", "--out", $out, "--title", "Attendees"],
-        [$report.Str, "pdf", $csv, "--out", $out, "--title", "Attendees"],
-        [$report.Str, "pdf", "--out", $out, "--title", "Attendees", $csv],
-    );
-    my ($ok3, @argv3, $pout, $perr) = try-argv(@pdf-variants);
-    ok $ok3, "report pdf completed OK" or diag "All pdf variants failed";
-    if $ok3 {
-        ok $out.IO.e and $out.IO.s > 0, 'pdf file exists and is non-empty'
-            or diag "No PDF at {$out}. stderr:\n$perr\nstdout:\n$pout";
-    } else {
-        skip "pdf step failed; no file to check", 1;
-    }
+    my @pargs = $rflag.chars ?? [$report.Str,"pdf",$rflag,$csv,"--out",$out,"--title","Attendees"]
+                             !! [$report.Str,"pdf",$csv,"--out",$out,"--title","Attendees"];
+    my ($pec,$pout,$perr)=run-cmd(@pargs);
+    is $pec,0,"report pdf exitcode ok";
+    ok $out.IO.e && $out.IO.s>0,"pdf file exists";
+    diag "report pdf stderr:\n$perr" if $perr.chars;
 } else {
-    skip "PDF::Lite not available; skipping PDF checks", 2;
+    skip "PDF::Lite not available",2;
 }
 
 done-testing;
