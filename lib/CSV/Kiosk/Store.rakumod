@@ -49,10 +49,12 @@ class Store is export {
 
     method sorted(:$by = 'name', :$cmp = &infix:<leg>) {
         my &pick = $by eq 'email'
-            ?? (-> $r { $r.email // '' })
-            !! (-> $r { $r.name  // '' });
+            ?? -> $r { $r.email // '' }
+            !! -> $r { $r.name  // '' };
 
-        %.by-key.values.sort( -> $a, $b { pick($a) $cmp pick($b) } )
+        %.by-key.values.sort( -> $a, $b { 
+            $cmp( pick($a),  pick($b))
+        } )
     }
 }
 
