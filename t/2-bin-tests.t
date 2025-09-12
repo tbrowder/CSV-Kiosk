@@ -29,7 +29,9 @@ ok $csv.IO.e, "seed CSV created at $csv";
 my $scmd = sprintf("%s %s bin/csvk-report --csv=%s sort --by=name",
                    raku, libopt, $csv.subst("'", "'\"'\"'", :g));
 my ($sec,$sout,$serr) = sh-run($scmd, :label("sort"));
+# test 3 failing...
 diag "sort stderr:\n{$serr}" if $serr.chars;
+
 is $sec, 0, "report sort exited cleanly (shell)" or diag "sort stdout:\n{$sout}";
 
 # pdf (positional .text fix in module)
