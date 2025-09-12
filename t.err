@@ -1,0 +1,13 @@
+===SORRY!=== Error while compiling /usr/local/git-repos/my-public-modules/CSV-Kiosk/t/0-load-test.t
+===SORRY!=== Error while compiling /usr/local/git-repos/my-public-modules/CSV-Kiosk/lib/CSV/Kiosk/Store.rakumod (CSV::Kiosk::Store)
+Two terms in a row
+at /usr/local/git-repos/my-public-modules/CSV-Kiosk/lib/CSV/Kiosk/Store.rakumod (CSV::Kiosk::Store):55
+------> by-key.values.sort( -> $a, $b { pick($a)<HERE> $cmp pick($b) } )
+    expecting any of:
+        infix
+        infix stopper
+        statement end
+        statement modifier
+        statement modifier loop
+
+at /usr/local/git-repos/my-public-modules/CSV-Kiosk/t/0-load-test.t:7
