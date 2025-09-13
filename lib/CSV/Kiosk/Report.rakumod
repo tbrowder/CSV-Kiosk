@@ -34,7 +34,11 @@ our sub sort-csv(
         $fh.close;
 
         my &key = $numeric ?? { .[$idx].Numeric } !! { .[$idx] // '' };
-        @rows .= sort: { key($^a) leg key($^b) };
+        if $numeric {
+            @rows = @rows.sort( { key($^a) <=> key($^b) } );
+        } else {
+            @rows = @rows.sort( { key($^a) cmp key($^b) } );
+        }
         @rows .= reverse if $reverse;
 
         my $out-h = $out ?? $out.IO.open(:w) !! $*OUT;

@@ -1,6 +1,6 @@
 #!/usr/bin/env raku
 use v6.d;
-use CSV::Kiosk::Report :sort-csv, :generate-pdf;
+use CSV::Kiosk::Report :ALL;
 
 sub USAGE() {
     say q:to/END/;
