@@ -24,6 +24,28 @@ my $csv = $tmpdir.add("attendees.csv").Str;
 spurt $csv, "name,email\nAlice,alice\@example.com\nBob,bob\@example.com\nCharlie,charlie\@example.com\n";
 ok $csv.IO.e, "seed CSV created at $csv";
 
+# ---------- sort via shell (try both orders) ----------
+my $scmd1 = sprintf("%s -Ilib bin/csvk-report sort --csv=%s --by=name",
+                    $*EXECUTABLE,
+                    $csv.subst("'", "'\\\"'\\\"'", :g));
+my $scmd2 = sprintf("%s -Ilib bin/csvk-report --csv=%s sort --by=name",
+                    $*EXECUTABLE,
+                    $csv.subst("'", "'\\\"'\\\"'", :g));
+
+my $sec = shell "$scmd1 1> t/tmp/sort1.out 2> t/tmp/sort1.err";
+$sec = $sec.can('exitcode') ?? $sec.exitcode !! $sec;
+if $sec != 0 {
+    diag "sort1 (command-first) failed; stderr:\n" ~
+        ("t/tmp/sort1.err".IO.e ?? "t/tmp/sort1.err".IO.slurp !! "");
+    $sec = shell "$scmd2 1> t/tmp/sort2.out 2> t/tmp/sort2.err";
+    $sec = $sec.can('exitcode') ?? $sec.exitcode !! $sec;
+    diag "sort2 (flags-first) stderr:\n" ~
+        ("t/tmp/sort2.err".IO.e ?? "t/tmp/sort2.err".IO.slurp !! "")
+        if $sec != 0;
+}
+is $sec, 0, "report sort exited cleanly (shell)";
+
+
 =begin comment
 # REPLACE THIS BLOCK
 # sort (flags first, subcommand last)
