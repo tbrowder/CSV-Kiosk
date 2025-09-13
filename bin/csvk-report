@@ -1,75 +1,43 @@
 #!/usr/bin/env raku
 use CSV::Kiosk::Report :ALL;
 
-# ----- sort -----
-multi sub MAIN(
-    'sort',
-    Str :$csv!, Str :$by = 'name', Str :$sep = ','
-) {
-    CSV::Kiosk::Report::sort-csv($csv, :$by, :$sep);
-}
+@@
+-# (remove any existing MAIN definitions)
++sub USAGE() {
++    note "Usage:\n"
++      ~ "  bin/csvk-report sort --csv=<file> [--by=<hdr>] [--sep=<c>]\n"
++      ~ "  bin/csvk-report --csv=<file> sort [--by=<hdr>] [--sep=<c>]\n"
++      ~ "  bin/csvk-report pdf  --csv=<file> --out=<pdf> "
++      ~ "[--title=<s>] [--sep=<c>]\n"
++      ~ "  bin/csvk-report --csv=<file> --out=<pdf> "
++      ~ "[--title=<s>] [--sep=<c>] pdf";
++}
++
++# One flexible entry point: positional first, then named.
++# This avoids the 'required parameter after named' issue.
++sub MAIN(*@pos, *%opt) {
++    # subcommand can appear at start or end; default to 'sort'
++    my $cmd = @pos.first({ $_ eq 'sort' || $_ eq 'pdf' }) // 'sort';
++
++    my $csv   = %opt<csv>   // (USAGE; exit 2);
++    my $sep   = %opt<sep>   // ',';
++    my $by    = %opt<by>    // 'name';
++    my $out   = %opt<out>;
++    my $title = %opt<title> // 'CSV List';
++
++    given $cmd {
++        when 'sort' {
++            CSV::Kiosk::Report::sort-csv($csv, :$by, :$sep);
++            exit 0;
++        }
++        when 'pdf' {
++            $out // (note "--out is required for pdf"; USAGE; exit 2);
++            CSV::Kiosk::Report::generate-pdf($csv, $out, :$title, :$sep);
++            exit 0;
++        }
++        default {
++            USAGE; exit 2;
++        }
++    }
++}
 
-multi sub MAIN(
-    Str :$csv!, Str :$by = 'name', Str :$sep = ',', 'sort'
-) {
-    CSV::Kiosk::Report::sort-csv($csv, :$by, :$sep);
-}
-
-# ----- pdf -----
-multi sub MAIN(
-    'pdf',
-    Str :$csv!, Str :$out!, Str :$title = 'CSV List', Str :$sep = ','
-) {
-    CSV::Kiosk::Report::generate-pdf($csv, $out, :$title, :$sep);
-}
-
-multi sub MAIN(
-    Str :$csv!, Str :$out!, Str :$title = 'CSV List', Str :$sep = ',', 'pdf'
-) {
-    CSV::Kiosk::Report::generate-pdf($csv, $out, :$title, :$sep);
-}
-
-# ----- fallback usage (if nothing matched) -----
-multi sub MAIN() {
-    note "Usage:\n"
-      ~ "  bin/csvk-report sort --csv=<file> [--by=<hdr>] [--sep=<c>]\n"
-      ~ "  bin/csvk-report --csv=<file> sort [--by=<hdr>] [--sep=<c>]\n"
-      ~ "  bin/csvk-report pdf --csv=<file> --out=<pdf> "
-      ~ "[--title=<s>] [--sep=<c>]\n"
-      ~ "  bin/csvk-report --csv=<file> --out=<pdf> "
-      ~ "[--title=<s>] [--sep=<c>] pdf";
-    exit 2;
-}
-
-=finish
-
-#!/usr/bin/env raku
-use CSV::Kiosk::Report :ALL;
-
-multi sub MAIN('sort',
-    Str :$csv! where *.IO.f,
-    Str :$by,
-    Str :$sep = ',',
-) {
-    sort-csv($csv, :$by, :$sep);
-    say "Sorted {$csv} by '{$by // 'first field'}'.";
-}
-
-multi sub MAIN('pdf',
-    Str :$csv! where *.IO.f,
-    Str :$out! where *.IO.dirname.IO.d,
-    Str :$title = 'CSV List',
-    Str :$sep = ',',
-) {
-    generate-pdf($csv, $out, :$title, :$sep);
-    say "PDF written to {$out}.";
-}
-
-multi sub MAIN('dump',
-    Str :$csv! where *.IO.f,
-    Str :$sep = ',',
-) {
-    my $data = read-csv($csv, :$sep);
-    say $data<header>.join(',');
-    for $data<rows> -> $r { say $r.join(',') }
-}
