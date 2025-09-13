@@ -2,6 +2,39 @@
 use v6.d;
 use CSV::Kiosk::Report :ALL;
 
+# --- config loading helpers -----------------------------------------------
+
+sub read-conf(Str $path --> Hash) {
+    return {} unless $path.IO.f && $path.IO.r;
+    my %cfg;
+    for $path.IO.lines -> $line {
+        next if $line ~~ /^\s*$/;          # blank
+        next if $line ~~ /^\s* '#' /;      # comment
+        if $line ~~ /^ \s* (\w+) \s* '=' \s* (.*) \s* $/ {
+            my $k = ~$0;
+            my $v = ~$1;
+            if $v ~~ /^"(.*)"$/ { $v = ~$0 }
+            elsif $v ~~ /^\'(.*)\'$/ { $v = ~$0 }
+            %cfg{$k} = $v.trim;
+        }
+    }
+    %cfg
+}
+
+sub load-config(--> Hash) {
+    my @candidates = (
+        %*ENV<HOME> ~ '/.csvk-report.conf',
+        $*CWD ~ '/csvk-report.conf',
+    );
+    my %merged;
+    for @candidates -> $p {
+        %merged{$_.key} = $_.value for read-conf($p).pairs;
+    }
+    %merged
+}
+
+# --------------------------------------------------------------------------
+
 sub USAGE() {
     say q:to/END/;
 Usage:
@@ -16,12 +49,21 @@ sub MAIN(
     Str :$csv,
     Str :$out,
     Str :$by,
-    Str :$sep = ',',
+    Str :$sep,
     Str :$title,
     Bool :$numeric = False,
     Bool :$reverse = False,
     *@cmd,
 ) {
+    my %cfg = load-config();
+
+    # fill in defaults if options not provided (CLI > project > home > built-ins)
+    $csv   //= %cfg<csv>;
+    $out   //= %cfg<out>;
+    $by    //= %cfg<by>;
+    $sep   //= %cfg<sep> // ',';
+    $title //= %cfg<title>;
+
     if @cmd.elems == 0 {
         USAGE();
         exit 2;
