@@ -1,3 +1,68 @@
+@@
+- sub MAIN(
+-     Str :$csv!,         # --csv=<path>
+-     Str :$out,          # --out=<pdf> (pdf subcommand)
+-     Str :$title = 'CSV List',
+-     Str :$sep   = ',',
+-     Str $command is copy = 'sort',  # default allows plain --csv=... sort
+-     Str :$by = 'name'
+- ) {
+-     given $command {
+-         when 'sort' {
+-             CSV::Kiosk::Report::sort-csv($csv, :$by, :$sep);
+-         }
+-         when 'pdf' {
+-             die "--out is required for pdf" unless $out.defined && $out.chars;
+-             CSV::Kiosk::Report::generate-pdf($csv, $out, :$title, :$sep);
+-         }
+-         default {
+-             note "Usage:\n  bin/csvk-report --csv=<file> [--by=<hdr>] [--sep=<c>] sort\n"
+-               ~ "  bin/csvk-report --csv=<file> --out=<pdf> [--title=<s>] "
+-               ~ "[--sep=<c>] pdf";
+-             exit 2;
+-         }
+-     }
+- }
++ # ----- sort -----
++ multi sub MAIN(
++     'sort',
++     Str :$csv!, Str :$by = 'name', Str :$sep = ','
++ ) {
++     CSV::Kiosk::Report::sort-csv($csv, :$by, :$sep);
++ }
++
++ multi sub MAIN(
++     Str :$csv!, Str :$by = 'name', Str :$sep = ',', 'sort'
++ ) {
++     CSV::Kiosk::Report::sort-csv($csv, :$by, :$sep);
++ }
++
++ # ----- pdf -----
++ multi sub MAIN(
++     'pdf',
++     Str :$csv!, Str :$out!, Str :$title = 'CSV List', Str :$sep = ','
++ ) {
++     CSV::Kiosk::Report::generate-pdf($csv, $out, :$title, :$sep);
++ }
++
++ multi sub MAIN(
++     Str :$csv!, Str :$out!, Str :$title = 'CSV List', Str :$sep = ',', 'pdf'
++ ) {
++     CSV::Kiosk::Report::generate-pdf($csv, $out, :$title, :$sep);
++ }
++
++ # ----- fallback usage (if nothing matched) -----
++ multi sub MAIN() {
++     note "Usage:\n"
++       ~ "  bin/csvk-report sort --csv=<file> [--by=<hdr>] [--sep=<c>]\n"
++       ~ "  bin/csvk-report --csv=<file> sort [--by=<hdr>] [--sep=<c>]\n"
++       ~ "  bin/csvk-report pdf --csv=<file> --out=<pdf> "
++       ~ "[--title=<s>] [--sep=<c>]\n"
++       ~ "  bin/csvk-report --csv=<file> --out=<pdf> "
++       ~ "[--title=<s>] [--sep=<c>] pdf";
++     exit 2;
++ }
+
 #!/usr/bin/env raku
 
 use CSV::Kiosk::Report :ALL;
