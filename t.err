@@ -1,32 +1,19 @@
 # sort1 (command-first) failed; stderr:
-# ===SORRY!=== Error while compiling /usr/local/git-repos/my-public-modules/CSV-Kiosk/bin/csvk-report
-# Error while importing from 'CSV::Kiosk::Report': no such tag 'sort-csv'
-# at /usr/local/git-repos/my-public-modules/CSV-Kiosk/bin/csvk-report:3
-# ------> ::Kiosk::Report :sort-csv, :generate-pdf<HERE>;
+# Type check failed in binding to parameter '$csv'; expected Str but got Any (Any)
+#   in sub sort-csv at /usr/local/git-repos/my-public-modules/CSV-Kiosk/lib/CSV/Kiosk/Report.rakumod (CSV::Kiosk::Report) line 3
+#   in sub MAIN at bin/csvk-report line 74
+#   in block <unit> at bin/csvk-report line 3
+# 
 # 
 # sort2 (flags-first) stderr:
-# ===SORRY!=== Error while compiling /usr/local/git-repos/my-public-modules/CSV-Kiosk/bin/csvk-report
-# Error while importing from 'CSV::Kiosk::Report': no such tag 'sort-csv'
-# at /usr/local/git-repos/my-public-modules/CSV-Kiosk/bin/csvk-report:3
-# ------> ::Kiosk::Report :sort-csv, :generate-pdf<HERE>;
+# Type check failed in binding to parameter '$by'; expected Str but got Any (Any)
+#   in sub sort-csv at /usr/local/git-repos/my-public-modules/CSV-Kiosk/lib/CSV/Kiosk/Report.rakumod (CSV::Kiosk::Report) line 3
+#   in sub MAIN at bin/csvk-report line 74
+#   in block <unit> at bin/csvk-report line 3
+# 
 # 
 # Failed test 'report sort exited cleanly (shell)'
 # at t/2-bin-tests.t line 46
 # expected: '0'
 #      got: '1'
-# pdf stderr:
-# ===SORRY!=== Error while compiling /usr/local/git-repos/my-public-modules/CSV-Kiosk/bin/csvk-report
-# Error while importing from 'CSV::Kiosk::Report': no such tag 'sort-csv'
-# at /usr/local/git-repos/my-public-modules/CSV-Kiosk/bin/csvk-report:3
-# ------> ::Kiosk::Report :sort-csv, :generate-pdf<HERE>;
-# 
-# Failed test 'report pdf exited cleanly (shell)'
-# at t/2-bin-tests.t line 58
-# expected: '0'
-#      got: '1'
-# pdf stdout:
-# 
-# Failed test 'pdf file exists and is non-empty'
-# at t/2-bin-tests.t line 60
-# No PDF at t/tmp/attendees.pdf
-# You failed 3 tests of 4
+# You failed 1 test of 4

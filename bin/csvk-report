@@ -57,12 +57,12 @@ sub MAIN(
 ) {
     my %cfg = load-config();
 
-    # fill in defaults if options not provided (CLI > project > home > built-ins)
-    $csv   //= %cfg<csv>;
-    $out   //= %cfg<out>;
-    $by    //= %cfg<by>;
-    $sep   //= %cfg<sep> // ',';
-    $title //= %cfg<title>;
+    # Do NOT mutate parameters (they're readonly). Compute locals instead.
+    my $csvv   = $csv   // %cfg<csv>;
+    my $outv   = $out   // %cfg<out>;
+    my $byv    = $by    // %cfg<by>;
+    my $sepv   = $sep   // %cfg<sep> // ',';
+    my $titlev = $title // %cfg<title>;
 
     if @cmd.elems == 0 {
         USAGE();
@@ -71,11 +71,11 @@ sub MAIN(
     my $subcmd = @cmd[0];
     given $subcmd {
         when 'sort' {
-            my $code = sort-csv(:$csv, :$by, :$sep, :$out, :$numeric, :$reverse);
+            my $code = sort-csv(:csv($csvv), :by($byv), :sep($sepv), :out($outv), :$numeric, :$reverse);
             exit $code;
         }
         when 'pdf' {
-            my $code = generate-pdf(:$csv, :$out, :$title);
+            my $code = generate-pdf(:csv($csvv), :out($outv), :title($titlev));
             exit $code;
         }
         default {
