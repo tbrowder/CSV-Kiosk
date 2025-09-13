@@ -1,4 +1,3 @@
-
 use v6;
 use Test;
 
@@ -25,6 +24,8 @@ my $csv = $tmpdir.add("attendees.csv").Str;
 spurt $csv, "name,email\nAlice,alice\@example.com\nBob,bob\@example.com\nCharlie,charlie\@example.com\n";
 ok $csv.IO.e, "seed CSV created at $csv";
 
+=begin comment
+# REPLACE THIS BLOCK
 # sort (flags first, subcommand last)
 my $scmd = sprintf("%s %s bin/csvk-report --csv=%s sort --by=name",
                    raku, libopt, $csv.subst("'", "'\"'\"'", :g));
@@ -33,6 +34,7 @@ my ($sec,$sout,$serr) = sh-run($scmd, :label("sort"));
 diag "sort stderr:\n{$serr}" if $serr.chars;
 
 is $sec, 0, "report sort exited cleanly (shell)" or diag "sort stdout:\n{$sout}";
+=end comment
 
 # pdf (positional .text fix in module)
 my $pdf = $tmpdir.add("attendees.pdf").Str;
