@@ -1,13 +1,38 @@
 # sort1 (command-first) failed; stderr:
-# Usage:
-#   bin/csvk-report --csv=<Str where { ... }> [--by=<Str>] [--sep=<Str>] sort
+# ===SORRY!=== Error while compiling /usr/local/git-repos/my-public-modules/CSV-Kiosk/bin/csvk-report
+# Cannot put required parameter  after named parameters
+# at /usr/local/git-repos/my-public-modules/CSV-Kiosk/bin/csvk-report:14
+# ------> <BOL><HERE>) {
+#     expecting any of:
+#         constraint
+#         formal parameter
 # 
 # sort2 (flags-first) stderr:
-# Usage:
-#   bin/csvk-report --csv=<Str where { ... }> [--by=<Str>] [--sep=<Str>] sort
+# ===SORRY!=== Error while compiling /usr/local/git-repos/my-public-modules/CSV-Kiosk/bin/csvk-report
+# Cannot put required parameter  after named parameters
+# at /usr/local/git-repos/my-public-modules/CSV-Kiosk/bin/csvk-report:14
+# ------> <BOL><HERE>) {
+#     expecting any of:
+#         constraint
+#         formal parameter
 # 
 # Failed test 'report sort exited cleanly (shell)'
 # at t/2-bin-tests.t line 46
 # expected: '0'
-#      got: '2'
-# You failed 1 test of 4
+#      got: '1'
+# pdf stderr:
+# ===SORRY!=== Error while compiling /usr/local/git-repos/my-public-modules/CSV-Kiosk/bin/csvk-report
+# Cannot put required parameter  after named parameters
+# at /usr/local/git-repos/my-public-modules/CSV-Kiosk/bin/csvk-report:14
+# ------> <BOL><HERE>) {
+#     expecting any of:
+#         constraint
+#         formal parameter
+# 
+# Failed test 'report pdf exited cleanly (shell)'
+# at t/2-bin-tests.t line 58
+# expected: '0'
+#      got: '1'
+# pdf stdout:
+# 
+# You failed 2 tests of 4
