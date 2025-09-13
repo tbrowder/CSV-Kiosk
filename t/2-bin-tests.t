@@ -46,18 +46,6 @@ if $sec != 0 {
 is $sec, 0, "report sort exited cleanly (shell)";
 
 
-=begin comment
-# REPLACE THIS BLOCK
-# sort (flags first, subcommand last)
-my $scmd = sprintf("%s %s bin/csvk-report --csv=%s sort --by=name",
-                   raku, libopt, $csv.subst("'", "'\"'\"'", :g));
-my ($sec,$sout,$serr) = sh-run($scmd, :label("sort"));
-# test 3 failing...
-diag "sort stderr:\n{$serr}" if $serr.chars;
-
-is $sec, 0, "report sort exited cleanly (shell)" or diag "sort stdout:\n{$sout}";
-=end comment
-
 # pdf (positional .text fix in module)
 my $pdf = $tmpdir.add("attendees.pdf").Str;
 my $pcmd = sprintf("%s %s bin/csvk-report --csv=%s --out=%s --title=%s pdf",

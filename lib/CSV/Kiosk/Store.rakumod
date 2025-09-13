@@ -38,8 +38,6 @@ class Store is export {
     method add(Record $rec, :$replace = False) {
         my $k = $rec.key;
         return False unless $k.chars;
-
-#       return False if !$replace && self.by-key{$k}:exists;
         if !$replace {
             return False if %.by-key{$k}:exists;
         }
@@ -57,5 +55,3 @@ class Store is export {
         } )
     }
 }
-
-
