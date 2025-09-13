@@ -16,7 +16,10 @@
   "name": "CSV::Kiosk",
   "provides": {
     "CSV::Kiosk": "lib/CSV/Kiosk.rakumod",
-    "CSV::Kiosk::Report": "lib/CSV/Kiosk/Report.rakumod"
+    "CSV::Kiosk::Formatter": "lib/CSV/Kiosk/Formatter.rakumod",
+    "CSV::Kiosk::Record": "lib/CSV/Kiosk/Record.rakumod",
+    "CSV::Kiosk::Report": "lib/CSV/Kiosk/Report.rakumod",
+    "CSV::Kiosk::Store": "lib/CSV/Kiosk/Store.rakumod"
   },
   "resources": [
   ],
