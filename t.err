@@ -1,25 +1,24 @@
 # sort1 (command-first) failed; stderr:
-# Usage:
-#   bin/csvk-report sort --csv=<file> [--by=<hdr>] [--sep=<c>]
-#   bin/csvk-report --csv=<file> sort [--by=<hdr>] [--sep=<c>]
-#   bin/csvk-report pdf  --csv=<file> --out=<pdf> [--title=<s>] [--sep=<c>]
-#   bin/csvk-report --csv=<file> --out=<pdf> [--title=<s>] [--sep=<c>] pdf
+# ===SORRY!=== Error while compiling /usr/local/git-repos/my-public-modules/CSV-Kiosk/bin/csvk-report
+# Error while importing from 'CSV::Kiosk::Report': no such tag 'sort-csv'
+# at /usr/local/git-repos/my-public-modules/CSV-Kiosk/bin/csvk-report:3
+# ------> ::Kiosk::Report :sort-csv, :generate-pdf<HERE>;
 # 
 # sort2 (flags-first) stderr:
-# Could not find symbol '&sort-csv' in 'CSV::Kiosk::Report'
-#   in sub MAIN at bin/csvk-report line 30
-#   in block <unit> at bin/csvk-report line 2
-# 
+# ===SORRY!=== Error while compiling /usr/local/git-repos/my-public-modules/CSV-Kiosk/bin/csvk-report
+# Error while importing from 'CSV::Kiosk::Report': no such tag 'sort-csv'
+# at /usr/local/git-repos/my-public-modules/CSV-Kiosk/bin/csvk-report:3
+# ------> ::Kiosk::Report :sort-csv, :generate-pdf<HERE>;
 # 
 # Failed test 'report sort exited cleanly (shell)'
 # at t/2-bin-tests.t line 46
 # expected: '0'
 #      got: '1'
 # pdf stderr:
-# Could not find symbol '&generate-pdf' in 'CSV::Kiosk::Report'
-#   in sub MAIN at bin/csvk-report line 35
-#   in block <unit> at bin/csvk-report line 2
-# 
+# ===SORRY!=== Error while compiling /usr/local/git-repos/my-public-modules/CSV-Kiosk/bin/csvk-report
+# Error while importing from 'CSV::Kiosk::Report': no such tag 'sort-csv'
+# at /usr/local/git-repos/my-public-modules/CSV-Kiosk/bin/csvk-report:3
+# ------> ::Kiosk::Report :sort-csv, :generate-pdf<HERE>;
 # 
 # Failed test 'report pdf exited cleanly (shell)'
 # at t/2-bin-tests.t line 58
@@ -27,4 +26,7 @@
 #      got: '1'
 # pdf stdout:
 # 
-# You failed 2 tests of 4
+# Failed test 'pdf file exists and is non-empty'
+# at t/2-bin-tests.t line 60
+# No PDF at t/tmp/attendees.pdf
+# You failed 3 tests of 4
