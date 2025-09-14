@@ -57,7 +57,6 @@ sub MAIN(
 ) {
     my %cfg = load-config();
 
-    # Do NOT mutate parameters (they're readonly). Compute locals instead.
     my $csvv   = $csv   // %cfg<csv>;
     my $outv   = $out   // %cfg<out>;
     my $byv    = $by    // %cfg<by>;
@@ -71,11 +70,24 @@ sub MAIN(
     my $subcmd = @cmd[0];
     given $subcmd {
         when 'sort' {
-            my $code = sort-csv(:csv($csvv), :by($byv), :sep($sepv), :out($outv), :$numeric, :$reverse);
+            unless $csvv.defined {
+                note "csvk-report: --csv not provided and no 'csv' in config";
+                exit 2;
+            }
+            my %args = :csv($csvv), :sep($sepv), :$numeric, :$reverse;
+            %args<by>  = $byv   if $byv.defined;
+            %args<out> = $outv  if $outv.defined;
+            my $code = sort-csv(|%args);
             exit $code;
         }
         when 'pdf' {
-            my $code = generate-pdf(:csv($csvv), :out($outv), :title($titlev));
+            unless $csvv.defined && $outv.defined {
+                note "csvk-report: pdf requires --csv and --out (or config keys 'csv' and 'out')";
+                exit 2;
+            }
+            my %args = :csv($csvv), :out($outv);
+            %args<title> = $titlev if $titlev.defined;
+            my $code = generate-pdf(|%args);
             exit $code;
         }
         default {
